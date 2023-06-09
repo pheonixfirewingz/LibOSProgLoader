@@ -1,0 +1,80 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(ADD_PROJECT_NAME_HERE C CXX)
+
+#options
+set(TERMIANL_MODE ON)
+#options end
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+include(FlagControl)
+include(LocalLibrary)
+
+add_definitions(-DPROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+
+# Debug mode by default.
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DWITH_DEBUG)
+endif()
+
+if(${TERMIANL_MODE})
+    add_definitions(-DTERMIANL_MODE)
+endif()
+
+if(CMAKE_SYSTEM_NAME MATCHES Linux)
+    message(INFO "[SOFTRENDER] - building for Linux....")
+    add_definitions(-DON_LINUX)
+    set(ON_LINUX ON)
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+elseif(CMAKE_SYSTEM_NAME MATCHES WindowsStore)
+    message(INFO "[SOFTRENDER] -  building for WindowsStore....")
+   add_definitions(-DON_UWP)
+   set(ON_UWP ON)
+   set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+elseif(CMAKE_SYSTEM_NAME MATCHES Windows)
+    message(INFO "[SOFTRENDER] - building for Windows....")
+    add_definitions(-DON_WINDOWS)
+    set(ON_WINDOWS ON)
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+elseif(CMAKE_SYSTEM_NAME MATCHES Android)
+    message(INFO "[SOFTRENDER] - building for Android....")
+    add_definitions(-DON_ANDROID)
+    if(${STATIC_BUILD})
+        set(STATIC_BUILD OFF)
+    endif()
+    set(ON_ANDROID ON)
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+else()
+    message(FATAL_ERROR "system not supported")
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    add_definitions(-DIS_CLANG)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES GNU)
+    if(CMAKE_C_COMPILER_VERSION VERSION_LESS 12)
+        message(FATAL_ERROR "anything lower that gcc-12 compiler not supported")
+    endif()
+    add_definitions(-DIS_GCC)
+elseif (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+    add_definitions(-DIS_MSVC)
+else()
+    message(FATAL_ERROR "compiler not supported")
+endif()
+
+add_executable(${CMAKE_PROJECT_NAME}  ${PROJECT_SOURCE_DIR}/src/Main.cpp)
+flagsSetup(${CMAKE_PROJECT_NAME})
+
+target_include_directories (${CMAKE_PROJECT_NAME} PRIVATE  ${PROJECT_SOURCE_DIR}/libs/include STATIC)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/Includes STATIC)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src STATIC)
+
+include(SourceList)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src)
