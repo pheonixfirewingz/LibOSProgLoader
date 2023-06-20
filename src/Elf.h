@@ -11,7 +11,7 @@ using Elf64_Sword = signed int;         // 4 bytes
 using Elf64_Xword = unsigned long long; // 8 bytes
 using Elf64_Sxword = signed long long;  // 8 bytes
 using Elf64_Byte = unsigned char;       // 1 byte
-// elf enums interpritation
+// elf enums interpretation
 enum class Elf64Type : Elf64_Half
 {
     NONE = 0,        //	No file type
@@ -250,67 +250,6 @@ enum class Elf64SectionFlags : Elf64_Xword
     OS_NONCONFORMING = 0x100,
     GROUP = 0x200,
     TLS = 0x400,
-    /*
-#include <iostream>
-#include <vector>
-
-enum class Elf64SectionFlags : Elf64_Xword
-{
-    WRITE = 0x1,
-    ALLOC = 0x2,
-    EXECINSTR = 0x4,
-    MERGE = 0x10,
-    STRINGS = 0x20,
-    INFO_LINK = 0x40,
-    LINK_ORDER = 0x80,
-    OS_NONCONFORMING = 0x100,
-    GROUP = 0x200,
-    TLS = 0x400,
-};
-
-std::vector<Elf64SectionFlags> generateCombinations()
-{
-    std::vector<Elf64SectionFlags> combinations;
-
-    const std::vector<Elf64SectionFlags> flags = {
-        Elf64SectionFlags::WRITE,
-        Elf64SectionFlags::ALLOC,
-        Elf64SectionFlags::EXECINSTR,
-        Elf64SectionFlags::MERGE,
-        Elf64SectionFlags::STRINGS,
-        Elf64SectionFlags::INFO_LINK,
-        Elf64SectionFlags::LINK_ORDER,
-        Elf64SectionFlags::OS_NONCONFORMING,
-        Elf64SectionFlags::GROUP,
-        Elf64SectionFlags::TLS
-    };
-
-    // Generate combinations
-    for (std::size_t i = 0; i < flags.size(); ++i)
-    {
-        for (std::size_t j = i + 1; j < flags.size(); ++j)
-        {
-            const Elf64SectionFlags combination = flags[i] | flags[j];
-            combinations.push_back(combination);
-        }
-    }
-
-    return combinations;
-}
-
-int main()
-{
-    std::vector<Elf64SectionFlags> combinations = generateCombinations();
-
-    // Print the generated combinations
-    for (const auto& combination : combinations)
-    {
-        std::cout << static_cast<Elf64_Xword>(combination) << std::endl;
-    }
-
-    return 0;
-}
-    */
 };
 
 #if ON_WINDOWS
